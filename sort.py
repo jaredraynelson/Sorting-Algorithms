@@ -159,6 +159,50 @@ def is_sorted(lyst):
         return False
     
 
+def c_sort(lyst):
+    low_num_n_lyst = min(lyst)
+    high_num_n_lyst = max(lyst)
+    sorted_lyst = [0 for i in range(len(lyst))]
+    ind_matrix = [0 for i in range(low_num_n_lyst, high_num_n_lyst+1)]
+    
+    # COUNT NUMBER OF OCCURENCES:
+    for i in lyst:
+        i_minus_low_num_ind = i - low_num_n_lyst
+        ind_matrix[i_minus_low_num_ind] += 1
+    
+    # print(ind_matrix)
+    bool_matrix = ind_matrix.copy()
+    # ADD THE ADJACENT MATRIX VALUES
+    i = 0
+    adj_ind_matrix_ele_summed = ind_matrix.copy()
+    
+    while i < len(ind_matrix)-1:
+        adj_ind_matrix_ele_summed[i+1] = ind_matrix[i+1] + adj_ind_matrix_ele_summed[i]
+        i += 1
+    
+    adj_n_shifted_matrix = [0] + adj_ind_matrix_ele_summed[:-1]
+
+    ind_reference = adj_n_shifted_matrix.copy()
+    # print(ind_reference)
+    
+    j = 0
+    
+    for i in lyst:
+        ind = i - low_num_n_lyst
+        location = ind_reference[ind] 
+        if not bool_matrix[ind]:
+            continue
+        elif bool_matrix[ind] > 1:
+            for j in range(bool_matrix[ind]):
+                sorted_lyst[location+j] = i
+        else:
+            sorted_lyst[location] = i
+
+    
+
+    return sorted_lyst
+
+
 def main():
     # GENERATING RANDOM LIST
     size = 10000
@@ -169,31 +213,45 @@ def main():
     # COPY OF THE LYST IS PASSED INTO FUNCTIONS
     
     start = perf_counter_ns()
-    selection_sort(random_lyst.copy())
+    s_sort_return_lyst = selection_sort(random_lyst.copy())
     end = perf_counter_ns()
     print('selection_sort duration:', (end-start)/10**6, 'miliseconds')
 
     start = perf_counter_ns()
-    insertion_sort(random_lyst.copy())
+    in_sort_return_lyst = insertion_sort(random_lyst.copy())
     end = perf_counter_ns()
     print('insertion_sort duration:', (end-start)/10**6, 'miliseconds')
 
     start = perf_counter_ns()
-    mergesort(random_lyst.copy())
+    merg_sort_return_lyst = mergesort(random_lyst.copy())
     end = perf_counter_ns()
     print('mergesort duration:\t', (end-start)/10**6, 'miliseconds')
 
     start = perf_counter_ns()
-    quicksort(random_lyst.copy())
+    quick_sort_return_lyst = quicksort(random_lyst.copy())
     end = perf_counter_ns()
     print('quicksort duration:\t', (end-start)/10**6, 'miliseconds')
+
+    start = perf_counter_ns()
+    c_sort_return_lyst = c_sort(random_lyst.copy())
+    end = perf_counter_ns()
+    print('counting_sort duration:', (end-start)/10**6, 'miliseconds')
 
     # IN PYTHON TIMSORT IS USED AS PRIMARY SORTING METHOD SORTED()
     start = perf_counter_ns()
     sorted(random_lyst.copy())
     end = perf_counter_ns()
     print('timsort duration:\t', (end-start)/10**6, 'miliseconds')
- 
+
+    print('\n')
+    
+
+    print('***RESULTS***')
+    print('Selection sort is sorted:', is_sorted(s_sort_return_lyst))
+    print('Insertion sort is sorted:', is_sorted(in_sort_return_lyst))
+    print('Merge sort is sorted:    ', is_sorted(merg_sort_return_lyst))
+    print('Quick sort is sorted:    ', is_sorted(quick_sort_return_lyst))
+    print('Counting sort is sorted: ', is_sorted(c_sort_return_lyst))
 
 
 
